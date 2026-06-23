@@ -359,7 +359,3 @@ def auto_cleanup():
 
 
 threading.Thread(target=auto_cleanup, daemon=True).start()
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
