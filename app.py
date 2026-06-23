@@ -18,7 +18,9 @@ import yt_dlp
 app = Flask(__name__)
 CORS(app)
 
-DOWNLOAD_DIR = Path("downloads")
+# Gunakan path dari env var RENDER_DISK_PATH jika ada, jika tidak, fallback ke "downloads"
+# Ini memungkinkan kita menggunakan Render Disk di produksi dan folder lokal saat development.
+DOWNLOAD_DIR = Path(os.environ.get("RENDER_DISK_PATH", "downloads"))
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
 # Simpan progress tiap task
