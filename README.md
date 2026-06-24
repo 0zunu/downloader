@@ -1,56 +1,56 @@
 # Downloader
 
-Aplikasi web sederhana untuk mengunduh media dari berbagai situs menggunakan Flask dan `yt-dlp`.
+A simple web application to download media from various sites using Flask and `yt-dlp`.
 
-## Deskripsi
+## Description
 
-Proyek ini menyediakan antarmuka front-end yang mudah digunakan untuk menganalisis URL media dan mengunduh video, audio, atau gambar.
+This project provides an easy-to-use front-end interface for analyzing media URLs and downloading videos, audio, or images.
 
-Backend ditulis dengan Flask, sementara unduhan dikelola oleh `yt-dlp` dalam thread terpisah dan dilengkapi dengan sistem polling progress.
+The backend is written with Flask, while downloads are managed by `yt-dlp` in a separate thread and equipped with a progress polling system.
 
-## Fitur
+## Features
 
-- Analisis metadata URL media tanpa mengunduh
-- Unduhan video, audio, dan gambar dari banyak sumber
-- Pilihan resolusi, format, codec, dan kualitas audio
-- Download async di background thread
-- Progress polling real-time dengan informasi kecepatan/ETA
-- Fallback otomatis jika `ffmpeg` tidak tersedia
-- Cleanup otomatis untuk file yang sudah lebih dari 1 jam
+- Analyze media URL metadata without downloading
+- Download videos, audio, and images from many sources
+- Resolution, format, codec, and audio quality options
+- Async download in background thread
+- Real-time progress polling with speed/ETA information
+- Automatic fallback if `ffmpeg` is not available
+- Automatic cleanup for files older than 1 hour
 
-## Struktur Proyek
+## Project Structure
 
 ```
 downloader/
-├── app.py                # Aplikasi Flask utama dan worker yt-dlp
-├── requirements.txt      # Dependensi Python
-├── README.md             # Dokumentasi proyek
-├── downloads/            # Folder hasil unduhan
-├── static/               # Asset frontend
+├── app.py                # Main Flask application and yt-dlp worker
+├── requirements.txt      # Python dependencies
+├── README.md             # Project documentation
+├── downloads/            # Download results folder
+├── static/               # Frontend assets
 │   ├── style.css
 │   └── js/
 │       └── main.js
 └── templates/
-    └── index.html        # Halaman UI utama
+    └── index.html        # Main UI page
 ```
 
-## Persyaratan
+## Requirements
 
-- Python 3.9+ atau lebih baru
+- Python 3.9+ or newer
 - `yt-dlp`
 - `Flask`
 - `Flask-Cors`
-- Opsional: `ffmpeg` untuk penggabungan audio/video dan konversi format
+- Optional: `ffmpeg` for audio/video merging and format conversion
 
-## Instalasi
+## Installation
 
-1. Buat virtual environment:
+1. Create a virtual environment:
 
 ```bash
 python -m venv venv
 ```
 
-2. Aktifkan environment:
+2. Activate the environment:
 
 - Windows:
   ```bash
@@ -61,42 +61,42 @@ python -m venv venv
   source venv/bin/activate
   ```
 
-3. Instal dependensi:
+3. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Menjalankan aplikasi
+## Running the application
 
 ```bash
 python app.py
 ```
 
-Buka browser dan pergi ke `http://127.0.0.1:5000` untuk menggunakan UI downloader.
+Open your browser and go to `http://127.0.0.1:5000` to use the downloader UI.
 
-## Variabel Lingkungan
+## Environment Variables
 
-- `RENDER_DISK_PATH` (opsional): jika diatur, aplikasi akan menyimpan hasil unduhan di path tersebut. Jika tidak, akan menggunakan folder lokal `downloads/`.
+- `RENDER_DISK_PATH` (optional): if set, the application will save download results to that path. Otherwise, it will use the local `downloads/` folder.
 
-## Endpoint API
+## API Endpoints
 
-- `POST /api/info` — Ambil metadata media dari URL tanpa mengunduh
-- `POST /api/download` — Mulai unduhan async
-- `GET /api/progress/<task_id>` — Periksa progress unduhan
-- `GET /api/download-file/<task_id>` — Ambil file hasil unduhan ketika selesai
-- `DELETE /api/cleanup/<task_id>` — Hapus task dan folder unduhan
+- `POST /api/info` — Retrieve media metadata from URL without downloading
+- `POST /api/download` — Start async download
+- `GET /api/progress/<task_id>` — Check download progress
+- `GET /api/download-file/<task_id>` — Retrieve downloaded file when complete
+- `DELETE /api/cleanup/<task_id>` — Delete task and download folder
 
-## Penggunaan
+## Usage
 
-1. Masukkan URL media di UI.
-2. Klik "Analisis URL" untuk melihat metadata dan format yang tersedia.
-3. Pilih jenis media, format, dan opsi kualitas.
-4. Mulai unduhan dan tunggu progress sampai selesai.
-5. Klik tombol simpan ketika file sudah siap.
+1. Enter media URL in the UI.
+2. Click "Analyze URL" to see available metadata and formats.
+3. Select media type, format, and quality options.
+4. Start download and wait for progress to complete.
+5. Click the save button when the file is ready.
 
-## Catatan
+## Notes
 
-- Jika `ffmpeg` tidak ditemukan, aplikasi tetap dapat mengunduh file, tetapi opsi penggabungan dan ekstraksi audio/video mungkin dibatasi.
-- Folder `downloads/` menyimpan hasil unduhan sementara, dan file lama akan dibersihkan otomatis jika sudah lebih dari satu jam.
-- Gunakan `gunicorn` atau server produksi lain jika ingin menjalankan di lingkungan deployment.
+- If `ffmpeg` is not found, the application can still download files, but merging and audio/video extraction options may be limited.
+- The `downloads/` folder stores temporary download results, and old files will be automatically cleaned up if they are older than one hour.
+- Use `gunicorn` or another production server if you want to run in a deployment environment.
