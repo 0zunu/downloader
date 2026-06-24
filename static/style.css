@@ -69,6 +69,24 @@ body {
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; display: flex; align-items: center; gap: 10px;
 }
+.logo-image {
+  width: 32px; height: 32px; object-fit: contain;
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  padding: 6px;
+  box-shadow: 0 0 12px rgba(59,130,246,.15);
+}
+.logo-icon {
+  display: inline-block; width: 10px; height: 10px;
+  background: var(--indigo); border-radius: 50%;
+  -webkit-text-fill-color: initial;
+  box-shadow: 0 0 10px rgba(99,102,241,.6);
+}
+  font-size: 20px; font-weight: 700;
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; display: flex; align-items: center; gap: 10px;
+}
 .logo-icon {
   display: inline-block; width: 10px; height: 10px;
   background: var(--indigo); border-radius: 50%;
