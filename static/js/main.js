@@ -16,6 +16,9 @@ const infoMeta       = document.getElementById("infoMeta");
 const modeTabs       = document.querySelectorAll(".tab");
 const panels         = document.querySelectorAll(".panel");
 const downloadButtons = document.querySelectorAll(".btn-download");
+const fmtGrids        = document.querySelectorAll('.fmt-grid');
+const resGrids        = document.querySelectorAll('.res-grid');
+const optsRows        = document.querySelectorAll('.opts-row');
 
 // Progress & Ready Sections
 const progressSection= document.getElementById("progressSection");
@@ -46,6 +49,7 @@ let currentMode = "image";
 let currentURL = "";
 let currentTaskID = null;
 let pollingInterval = null;
+let currentResolution = "Terbaik";
 
 
 // ─────────────────────────────────────────────
@@ -92,9 +96,19 @@ function analyzeURL() {
       infoThumb.src = data.thumbnail || "";
       infoCard.style.display = "flex";
       urlBox.classList.add("analyzed");
+      // Reveal controls and set highest available resolution after analysis
+      setControlsVisible(true);
+      currentResolution = getHighestResolution(data);
+      const resolutionSelect = document.getElementById('resolutionSelect');
+      if (resolutionSelect) {
+          resolutionSelect.value = currentResolution;
+      }
+      updateAvailableFormats(data);
     })
     .catch(err => {
       urlBox.classList.remove("analyzed");
+            // Hide format/resolution/options on error
+            setControlsVisible(false);
     })
     .finally(() => {
       btnAnalyze.disabled = false;
@@ -102,15 +116,127 @@ function analyzeURL() {
     });
 }
 
+// Show or hide format/resolution/option controls
+function setControlsVisible(visible) {
+    const display = visible ? '' : 'none';
+    fmtGrids.forEach(el => el.style.display = display);
+    resGrids.forEach(el => el.style.display = display);
+    optsRows.forEach(el => el.style.display = display);
+    downloadButtons.forEach(btn => btn.style.display = visible ? 'inline-block' : 'none');
+}
+
+// Enable/disable format & resolution buttons based on info from server
+function updateAvailableFormats(info) {
+    const formats = info.formats || [];
+    const availableExts = new Set(formats.map(f => (f.ext || '').toLowerCase()));
+
+    const fmtMap = {
+        imgFmt: { JPEG: 'jpg', PNG: 'png', WebP: 'webp', AVIF: 'avif', TIFF: 'tiff', BMP: 'bmp', SVG: 'svg', RAW: 'raw' },
+        vidFmt: { MP4: 'mp4', WebM: 'webm', MKV: 'mkv', AVI: 'avi', MOV: 'mov', FLV: 'flv', TS: 'ts', '3GP': '3gp' },
+        audFmt: { MP3: 'mp3', AAC: 'm4a', FLAC: 'flac', WAV: 'wav', OGG: 'ogg', OPUS: 'opus', M4A: 'm4a', AIFF: 'aiff' },
+    };
+
+    // Determine max available video height
+    const videoHeights = formats.map(f => f.height || 0).filter(h => h > 0);
+    const maxVideoHeight = videoHeights.length ? Math.max(...videoHeights) : 0;
+
+    // Helper to toggle buttons in a group
+    function toggleFmtGroup(groupName, map) {
+        const group = document.querySelector(`[data-group="${groupName}"]`);
+        if (!group) return;
+        group.querySelectorAll('.fmt-btn').forEach(btn => {
+            const val = btn.dataset.val;
+            const mapped = (map && map[val]) ? map[val] : (val || '').toLowerCase();
+            const supported = mapped && availableExts.has(mapped);
+            if (supported) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+                if (btn.classList.contains('selected')) btn.classList.remove('selected');
+            }
+        });
+    }
+
+    // Toggle format buttons
+    toggleFmtGroup('imgFmt', fmtMap.imgFmt);
+    toggleFmtGroup('vidFmt', fmtMap.vidFmt);
+    toggleFmtGroup('audFmt', fmtMap.audFmt);
+
+    // Toggle video resolution buttons by comparing heights
+    const vidResGroup = document.querySelector('[data-group="vidRes"]');
+    if (vidResGroup) {
+        const heightMap = { '360p': 360, '480p': 480, '720p': 720, '1080p': 1080, '1440p': 1440, '4K': 2160, '8K': 4320, 'Terbaik': 0 };
+        vidResGroup.querySelectorAll('.res-btn').forEach(btn => {
+            const val = btn.dataset.val;
+            const h = heightMap[val] !== undefined ? heightMap[val] : (val.includes('4K') ? 2160 : 0);
+            const supported = (val === 'Terbaik') ? (maxVideoHeight > 0) : (maxVideoHeight >= h && h > 0);
+            if (supported) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+                if (btn.classList.contains('selected')) btn.classList.remove('selected');
+            }
+        });
+    }
+
+    // Toggle image resolution buttons based on whether thumbnail exists
+    const imgResGroup = document.querySelector('[data-group="imgRes"]');
+    if (imgResGroup) {
+        const hasThumb = !!info.thumbnail;
+        imgResGroup.querySelectorAll('.res-btn').forEach(btn => {
+            if (hasThumb) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+                if (btn.classList.contains('selected')) btn.classList.remove('selected');
+            }
+        });
+    }
+}
+
+function getHighestResolution(info) {
+    const resolutionOrder = ["8K", "4K", "1440p", "1080p", "720p", "480p", "360p", "Full HD", "HD", "SD", "Original", "Terbaik"];
+    const formats = info.formats || [];
+
+    // Prefer format labels from interface if available, otherwise fallback to highest height.
+    const heights = formats.map(f => f.height || 0).filter(h => h > 0);
+    const maxHeight = heights.length ? Math.max(...heights) : 0;
+
+    if (maxHeight >= 4320) return "8K";
+    if (maxHeight >= 2160) return "4K";
+    if (maxHeight >= 1440) return "1440p";
+    if (maxHeight >= 1080) return "1080p";
+    if (maxHeight >= 720) return "720p";
+    if (maxHeight >= 480) return "480p";
+    if (maxHeight >= 360) return "360p";
+    if (info.thumbnail) return "Full HD";
+    return "Terbaik";
+}
+
 function switchMode(mode) {
-  currentMode = mode;
-  modeTabs.forEach(tab => {
-    tab.classList.toggle("active", tab.id === `tab${mode.charAt(0).toUpperCase() + mode.slice(1,3)}`);
-    tab.setAttribute("aria-selected", tab.id === `tab${mode.charAt(0).toUpperCase() + mode.slice(1,3)}`);
-  });
-  panels.forEach(panel => {
-    panel.classList.toggle("active", panel.id === `panel${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
-  });
+    currentMode = mode;
+    const tabMap = {
+        image: 'tabImg',
+        video: 'tabVid',
+        audio: 'tabAud'
+    };
+    const targetTabId = tabMap[mode] || '';
+
+    modeTabs.forEach(tab => {
+        const isActive = tab.id === targetTabId;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+
+    panels.forEach(panel => {
+        panel.classList.toggle('active', panel.id === `panel${mode.charAt(0).toUpperCase() + mode.slice(1)}`);
+    });
 }
 
 
@@ -126,7 +252,7 @@ function startDownload(mediaType) {
     const resolutionGroup = mediaType === "image" ? "imgRes" : (mediaType === "video" ? "vidRes" : "audRes");
 
     const format = document.querySelector(`[data-group="${formatGroup}"] .selected`)?.dataset.val || "";
-    const resolution = document.querySelector(`[data-group="${resolutionGroup}"] .selected`)?.dataset.val || "";
+    const resolution = document.getElementById("resolutionSelect")?.value || currentResolution || document.querySelector(`[data-group="${resolutionGroup}"] .selected`)?.dataset.val || "Terbaik";
 
     const quality = document.getElementById("imgQuality")?.value || "85%";
     const codec = document.getElementById("videoCodec")?.value || "h264";
@@ -304,4 +430,6 @@ urlInput.addEventListener("keyup", (event) => {
 // Initial render
 document.addEventListener('DOMContentLoaded', () => {
     renderHistory();
+    // Hide format/resolution/options until a URL is provided and analyzed
+    setControlsVisible(false);
 });

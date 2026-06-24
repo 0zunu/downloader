@@ -79,45 +79,24 @@
 <!-- MAIN PANEL -->
 <main class="main">
 
-  <!-- MODE TABS -->
-  <div class="mode-tabs" role="tablist">
-    <button class="tab active" id="tabImg" role="tab" aria-selected="true" onclick="switchMode('image')">
-      <i class="ti ti-photo"></i> Gambar
-    </button>
-    <button class="tab" id="tabVid" role="tab" aria-selected="false" onclick="switchMode('video')">
-      <i class="ti ti-movie"></i> Video
-    </button>
-    <button class="tab" id="tabAud" role="tab" aria-selected="false" onclick="switchMode('audio')">
-      <i class="ti ti-music"></i> Audio
-    </button>
-  </div>
+  <!-- Mode tabs removed per user request -->
 
   <!-- ══════════ IMAGE PANEL ══════════ -->
   <div class="panel active" id="panelImage" role="tabpanel">
-
-    <p class="section-label">Format Gambar</p>
-    <div class="fmt-grid" data-group="imgFmt">
-      <button class="fmt-btn selected" data-val="JPEG"><span class="fmt-icon">🖼️</span><span class="fmt-name">JPEG</span><span class="fmt-desc">Universal</span></button>
-      <button class="fmt-btn" data-val="PNG"><span class="fmt-icon">📐</span><span class="fmt-name">PNG</span><span class="fmt-desc">Lossless</span></button>
-      <button class="fmt-btn" data-val="WebP"><span class="fmt-icon">⚡</span><span class="fmt-name">WebP</span><span class="fmt-desc">Modern</span></button>
-      <button class="fmt-btn" data-val="AVIF"><span class="fmt-icon">🔬</span><span class="fmt-name">AVIF</span><span class="fmt-desc">Next-gen</span></button>
-      <button class="fmt-btn" data-val="TIFF"><span class="fmt-icon">🗂️</span><span class="fmt-name">TIFF</span><span class="fmt-desc">Pro Print</span></button>
-      <button class="fmt-btn" data-val="BMP"><span class="fmt-icon">🎨</span><span class="fmt-name">BMP</span><span class="fmt-desc">Bitmap</span></button>
-      <button class="fmt-btn" data-val="SVG"><span class="fmt-icon">✏️</span><span class="fmt-name">SVG</span><span class="fmt-desc">Vektor</span></button>
-      <button class="fmt-btn" data-val="WEBP"><span class="fmt-icon">📷</span><span class="fmt-name">RAW</span><span class="fmt-desc">Asli</span></button>
-    </div>
-
-    <p class="section-label">Resolusi Gambar</p>
-    <div class="res-grid" data-group="imgRes">
-      <button class="res-btn" data-val="SD"><span class="res-name">SD</span><span class="res-sub">480×360</span></button>
-      <button class="res-btn" data-val="HD"><span class="res-tag hd">HD</span><span class="res-name">HD</span><span class="res-sub">1280×720</span></button>
-      <button class="res-btn selected" data-val="Full HD"><span class="res-tag fhd">FHD</span><span class="res-name">Full HD</span><span class="res-sub">1920×1080</span></button>
-      <button class="res-btn" data-val="4K UHD"><span class="res-tag uhd">4K</span><span class="res-name">4K UHD</span><span class="res-sub">3840×2160</span></button>
-      <button class="res-btn" data-val="8K UHD"><span class="res-tag ehk">8K</span><span class="res-name">8K UHD</span><span class="res-sub">7680×4320</span></button>
-      <button class="res-btn" data-val="Original"><span class="res-tag max">MAX</span><span class="res-name">Original</span><span class="res-sub">Asli Sumber</span></button>
-    </div>
-
     <div class="opts-row">
+      <div class="opt-card">
+        <p class="opt-label"><i class="ti ti-layout-grid"></i> Resolusi</p>
+        <select id="resolutionSelect" class="opt-select">
+          <option value="8K">8K</option>
+          <option value="4K">4K</option>
+          <option value="1440p">1440p</option>
+          <option value="1080p" selected>1080p</option>
+          <option value="720p">720p</option>
+          <option value="480p">480p</option>
+          <option value="360p">360p</option>
+          <option value="Terbaik">Terbaik</option>
+        </select>
+      </div>
       <div class="opt-card">
         <p class="opt-label"><i class="ti ti-adjustments"></i> Kualitas Kompresi</p>
         <select id="imgQuality" class="opt-select">
@@ -140,91 +119,13 @@
     </div>
 
     <button class="btn-download" onclick="startDownload('image')">
-      <i class="ti ti-download"></i> Unduh Gambar Sekarang
+      <i class="ti ti-download"></i> Unduh Sekarang
     </button>
   </div>
 
-  <!-- ══════════ VIDEO PANEL ══════════ -->
-  <div class="panel" id="panelVideo" role="tabpanel">
+  <!-- Video panel removed -->
 
-    <p class="section-label">Format Video</p>
-    <div class="fmt-grid" data-group="vidFmt">
-      <button class="fmt-btn selected" data-val="MP4"><span class="fmt-icon">🎬</span><span class="fmt-name">MP4</span><span class="fmt-desc">H.264</span></button>
-      <button class="fmt-btn" data-val="WebM"><span class="fmt-icon">🌐</span><span class="fmt-name">WebM</span><span class="fmt-desc">VP9/AV1</span></button>
-      <button class="fmt-btn" data-val="MKV"><span class="fmt-icon">📦</span><span class="fmt-name">MKV</span><span class="fmt-desc">Matroska</span></button>
-      <button class="fmt-btn" data-val="AVI"><span class="fmt-icon">🗃️</span><span class="fmt-name">AVI</span><span class="fmt-desc">Legacy</span></button>
-      <button class="fmt-btn" data-val="MOV"><span class="fmt-icon">🍎</span><span class="fmt-name">MOV</span><span class="fmt-desc">Apple</span></button>
-      <button class="fmt-btn" data-val="FLV"><span class="fmt-icon">⚡</span><span class="fmt-name">FLV</span><span class="fmt-desc">Flash</span></button>
-      <button class="fmt-btn" data-val="TS"><span class="fmt-icon">📡</span><span class="fmt-name">TS</span><span class="fmt-desc">Broadcast</span></button>
-      <button class="fmt-btn" data-val="3GP"><span class="fmt-icon">📱</span><span class="fmt-name">3GP</span><span class="fmt-desc">Mobile</span></button>
-    </div>
-
-    <p class="section-label">Resolusi &amp; Frame Rate</p>
-    <div class="res-grid" data-group="vidRes">
-      <button class="res-btn" data-val="360p"><span class="res-name">360p</span><span class="res-sub">640×360 · 30fps</span></button>
-      <button class="res-btn" data-val="480p"><span class="res-name">480p</span><span class="res-sub">854×480 · 30fps</span></button>
-      <button class="res-btn" data-val="720p"><span class="res-tag hd">HD</span><span class="res-name">720p</span><span class="res-sub">1280×720 · 60fps</span></button>
-      <button class="res-btn selected" data-val="1080p"><span class="res-tag fhd">FHD</span><span class="res-name">1080p</span><span class="res-sub">1920×1080 · 60fps</span></button>
-      <button class="res-btn" data-val="1440p"><span class="res-tag uhd">2K</span><span class="res-name">1440p</span><span class="res-sub">2560×1440 · 60fps</span></button>
-      <button class="res-btn" data-val="4K"><span class="res-tag uhd">4K</span><span class="res-name">4K</span><span class="res-sub">3840×2160 · 60fps</span></button>
-      <button class="res-btn" data-val="8K"><span class="res-tag ehk">8K</span><span class="res-name">8K</span><span class="res-sub">7680×4320 · 30fps</span></button>
-      <button class="res-btn" data-val="Terbaik"><span class="res-tag max">BEST</span><span class="res-name">Terbaik</span><span class="res-sub">Auto-detect</span></button>
-    </div>
-
-    <div class="opts-row">
-      <div class="opt-card">
-        <p class="opt-label"><i class="ti ti-microphone"></i> Audio Track</p>
-        <select id="videoAudio" class="opt-select">
-          <option selected>Dengan Audio (AAC)</option>
-          <option>Dengan Audio (MP3)</option>
-          <option>Dengan Audio (OPUS)</option>
-          <option>Tanpa Audio (Mute)</option>
-        </select>
-      </div>
-      <div class="opt-card">
-        <p class="opt-label"><i class="ti ti-cpu"></i> Codec Video</p>
-        <select id="videoCodec" class="opt-select">
-          <option value="h264" selected>H.264 — Kompatibel</option>
-          <option value="h265">H.265 / HEVC — Efisien</option>
-          <option value="av1">AV1 — Next-gen</option>
-          <option value="vp9">VP9 — Web Optimal</option>
-        </select>
-      </div>
-    </div>
-
-    <button class="btn-download" onclick="startDownload('video')">
-      <i class="ti ti-download"></i> Unduh Video Sekarang
-    </button>
-  </div>
-
-  <!-- ══════════ AUDIO PANEL ══════════ -->
-  <div class="panel" id="panelAudio" role="tabpanel">
-
-    <p class="section-label">Format Audio</p>
-    <div class="fmt-grid" data-group="audFmt">
-      <button class="fmt-btn selected" data-val="MP3"><span class="fmt-icon">🎵</span><span class="fmt-name">MP3</span><span class="fmt-desc">Universal</span></button>
-      <button class="fmt-btn" data-val="AAC"><span class="fmt-icon">🍎</span><span class="fmt-name">AAC</span><span class="fmt-desc">iOS/Apple</span></button>
-      <button class="fmt-btn" data-val="FLAC"><span class="fmt-icon">💎</span><span class="fmt-name">FLAC</span><span class="fmt-desc">Lossless</span></button>
-      <button class="fmt-btn" data-val="WAV"><span class="fmt-icon">🌊</span><span class="fmt-name">WAV</span><span class="fmt-desc">Studio</span></button>
-      <button class="fmt-btn" data-val="OGG"><span class="fmt-icon">🔊</span><span class="fmt-name">OGG</span><span class="fmt-desc">Open</span></button>
-      <button class="fmt-btn" data-val="OPUS"><span class="fmt-icon">🔬</span><span class="fmt-name">OPUS</span><span class="fmt-desc">Modern</span></button>
-      <button class="fmt-btn" data-val="M4A"><span class="fmt-icon">📱</span><span class="fmt-name">M4A</span><span class="fmt-desc">iTunes</span></button>
-      <button class="fmt-btn" data-val="AIFF"><span class="fmt-icon">🎙️</span><span class="fmt-name">AIFF</span><span class="fmt-desc">Pro Audio</span></button>
-    </div>
-
-    <p class="section-label">Kualitas Audio (Bitrate)</p>
-    <div class="res-grid" data-group="audRes">
-      <button class="res-btn" data-val="128 kbps"><span class="res-name">128</span><span class="res-sub">kbps · Standar</span></button>
-      <button class="res-btn" data-val="192 kbps"><span class="res-name">192</span><span class="res-sub">kbps · Good</span></button>
-      <button class="res-btn selected" data-val="256 kbps"><span class="res-tag hd">HQ</span><span class="res-name">256</span><span class="res-sub">kbps · Tinggi</span></button>
-      <button class="res-btn" data-val="320 kbps"><span class="res-tag uhd">VQ</span><span class="res-name">320</span><span class="res-sub">kbps · Max</span></button>
-      <button class="res-btn" data-val="Lossless"><span class="res-tag max">STUDIO</span><span class="res-name">∞</span><span class="res-sub">FLAC / WAV</span></button>
-    </div>
-
-    <button class="btn-download" onclick="startDownload('audio')">
-      <i class="ti ti-music"></i> Ekstrak Audio Sekarang
-    </button>
-  </div>
+  <!-- Audio panel removed -->
 
   <!-- PROGRESS SECTION -->
   <div class="progress-section" id="progressSection" style="display:none">

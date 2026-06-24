@@ -131,6 +131,12 @@ def download_worker(task_id: str, url: str, media_type: str,
         "no_warnings":    True,
     }
 
+    # Detect whether ffmpeg is available; yt-dlp needs ffmpeg to merge
+    ffmpeg_available = shutil.which('ffmpeg') is not None or shutil.which('ffmpeg.exe') is not None
+    if not ffmpeg_available:
+        with tasks_lock:
+            tasks[task_id].update({"warning": "ffmpeg not found on server — merging disabled"})
+
     try:
         if media_type == "image":
             # Coba unduh sebagai gambar langsung
@@ -150,15 +156,34 @@ def download_worker(task_id: str, url: str, media_type: str,
             ydl_opts["format"] = resolution_to_ytdlp_format("video", resolution, fmt, codec)
             ext = ext_for_format(fmt, "video")
             merge_fmt = ext if ext in ("mp4", "mkv", "webm") else "mp4"
-            ydl_opts["merge_output_format"] = merge_fmt
+            # Only set merge output format if ffmpeg is available; otherwise avoid requesting merging
+            if ffmpeg_available:
+                ydl_opts["merge_output_format"] = merge_fmt
+            else:
+                # If the format requests multiple streams (video+audio) but ffmpeg is missing,
+                # pick the primary video component to avoid yt-dlp trying to merge and failing.
+                fstr = ydl_opts["format"]
+                if "+" in fstr:
+                    ydl_opts["format"] = fstr.split("+")[0]
 
             if audio_opt == "Tanpa Audio (Mute)":
                 ydl_opts["format"] = ydl_opts["format"].split("+")[0]
 
         # Jalankan download
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=True)
-            title = info.get("title", "media") if info else "media"
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=True)
+                title = info.get("title", "media") if info else "media"
+        except yt_dlp.utils.DownloadError as e:
+            # Retry fallback for sites like Pinterest with no direct video formats
+            if media_type == "video" and "no video formats found" in str(e).lower():
+                ydl_opts.pop("merge_output_format", None)
+                ydl_opts["format"] = "best"
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info = ydl.extract_info(url, download=True)
+                    title = info.get("title", "media") if info else "media"
+            else:
+                raise
 
         # Temukan file hasil
         files = list(task_dir.glob("*"))
@@ -361,3 +386,6 @@ def auto_cleanup():
 
 
 threading.Thread(target=auto_cleanup, daemon=True).start()
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
