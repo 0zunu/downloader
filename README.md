@@ -1,27 +1,31 @@
 # Downloader
 
-A simple Flask-based media downloader using `yt-dlp`.
+Aplikasi web sederhana untuk mengunduh media dari berbagai situs menggunakan Flask dan `yt-dlp`.
 
 ## Deskripsi
 
-Proyek ini menyediakan antarmuka web untuk menganalisis URL media dan mengunduh konten dari berbagai situs. Backend menggunakan Flask, sedangkan unduhan dikelola oleh `yt-dlp` dengan dukungan progress monitoring.
+Proyek ini menyediakan antarmuka front-end yang mudah digunakan untuk menganalisis URL media dan mengunduh video, audio, atau gambar.
+
+Backend ditulis dengan Flask, sementara unduhan dikelola oleh `yt-dlp` dalam thread terpisah dan dilengkapi dengan sistem polling progress.
 
 ## Fitur
 
-- Analisis URL untuk menampilkan informasi media
-- Dukungan unduhan video, audio, dan gambar
-- Pengaturan resolusi / kualitas
-- Proses unduhan latar belakang dengan progress polling
-- Penanganan fallback jika `ffmpeg` tidak tersedia
+- Analisis metadata URL media tanpa mengunduh
+- Unduhan video, audio, dan gambar dari banyak sumber
+- Pilihan resolusi, format, codec, dan kualitas audio
+- Download async di background thread
+- Progress polling real-time dengan informasi kecepatan/ETA
+- Fallback otomatis jika `ffmpeg` tidak tersedia
+- Cleanup otomatis untuk file yang sudah lebih dari 1 jam
 
-## Struktur File
+## Struktur Proyek
 
 ```
 downloader/
 ├── app.py                # Aplikasi Flask utama dan worker yt-dlp
 ├── requirements.txt      # Dependensi Python
 ├── README.md             # Dokumentasi proyek
-├── downloads/            # Folder output unduhan
+├── downloads/            # Folder hasil unduhan
 ├── static/               # Asset frontend
 │   ├── style.css
 │   └── js/
@@ -30,9 +34,17 @@ downloader/
     └── index.html        # Halaman UI utama
 ```
 
+## Persyaratan
+
+- Python 3.9+ atau lebih baru
+- `yt-dlp`
+- `Flask`
+- `Flask-Cors`
+- Opsional: `ffmpeg` untuk penggabungan audio/video dan konversi format
+
 ## Instalasi
 
-1. Buat environment Python baru:
+1. Buat virtual environment:
 
 ```bash
 python -m venv venv
@@ -49,21 +61,42 @@ python -m venv venv
   source venv/bin/activate
   ```
 
-3. Pasang dependensi:
+3. Instal dependensi:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Menjalankan
+## Menjalankan aplikasi
 
 ```bash
 python app.py
 ```
 
-Lalu buka browser ke `http://127.0.0.1:5000`.
+Buka browser dan pergi ke `http://127.0.0.1:5000` untuk menggunakan UI downloader.
+
+## Variabel Lingkungan
+
+- `RENDER_DISK_PATH` (opsional): jika diatur, aplikasi akan menyimpan hasil unduhan di path tersebut. Jika tidak, akan menggunakan folder lokal `downloads/`.
+
+## Endpoint API
+
+- `POST /api/info` — Ambil metadata media dari URL tanpa mengunduh
+- `POST /api/download` — Mulai unduhan async
+- `GET /api/progress/<task_id>` — Periksa progress unduhan
+- `GET /api/download-file/<task_id>` — Ambil file hasil unduhan ketika selesai
+- `DELETE /api/cleanup/<task_id>` — Hapus task dan folder unduhan
+
+## Penggunaan
+
+1. Masukkan URL media di UI.
+2. Klik "Analisis URL" untuk melihat metadata dan format yang tersedia.
+3. Pilih jenis media, format, dan opsi kualitas.
+4. Mulai unduhan dan tunggu progress sampai selesai.
+5. Klik tombol simpan ketika file sudah siap.
 
 ## Catatan
 
-- Jika `ffmpeg` tidak terpasang, unduhan akan berfungsi tetapi penggabungan format audio/video akan dinonaktifkan.
-- Direktori `downloads/` digunakan untuk menyimpan hasil unduhan.
+- Jika `ffmpeg` tidak ditemukan, aplikasi tetap dapat mengunduh file, tetapi opsi penggabungan dan ekstraksi audio/video mungkin dibatasi.
+- Folder `downloads/` menyimpan hasil unduhan sementara, dan file lama akan dibersihkan otomatis jika sudah lebih dari satu jam.
+- Gunakan `gunicorn` atau server produksi lain jika ingin menjalankan di lingkungan deployment.
